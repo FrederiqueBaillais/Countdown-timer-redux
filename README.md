@@ -108,8 +108,6 @@ ReactDOM.render(
 );
 ```
 
-Vous pouvez parfois visiter la branche ```redux``` sur GitHub pour voir le code, si vous êtes bloqué quelque part.
-
 ## Créer toutes les actions
 
 Comme nous le savons, c'est une bonne pratique d'affecter des variables à la propriété ```type``` de l'objet action plutôt que de fournir des chaînes directement, nous allons donc créer un fichier appelé ```actions.js``` à l'intérieur du dossier nommé ```/store``` pour avoir tous les types d'action.
@@ -123,8 +121,6 @@ export const COUNTDOWN = "COUNTDOWN";
 export const COUNTDOWNATZERO = "COUNTDOWNATZERO";
 export const RESET = "RESET";
 ```
-
-Vous pouvez visiter la branche ```redux2``` sur GitHub pour voir le code, si vous êtes bloqué quelque part.
 
 ## Connexion avec le composant Timer
 
@@ -218,8 +214,6 @@ export default reducer;
 ```
 
 **Remarque :** Nous passons ```secToTime()``` de nombreuses fois en tant que fonction dans notre objet action, c'est parce que nous avons toujours besoin de cette fonction pour nous donner le format d'heure exact, en entrant simplement des secondes.
-
-Vous pouvez visiter la branche ```redux3``` sur GitHub pour voir le code, si vous êtes bloqué quelque part.
 
 ## Comment réduire et stocker à partir d'un composant ?
 
@@ -369,6 +363,3 @@ let { h, m, s } = this.timeFormatter(this.props.time);
 Maintenant, nous pouvons facilement afficher les données de notre store global dans notre méthode ```render()```, ce qui fait que notre application fonctionne parfaitement. Vous pouvez maintenant exécuter votre serveur à l'aide de ```npm run start``` ou ```yarn start``` pour voir comment fonctionne votre compte à rebours.
 
 Nous espèrons que c'était une construction amusante.
-
-Vous pouvez visiter la branche ```redux4``` sur GitHub pour voir le code, si vous êtes bloqué quelque part.
-
