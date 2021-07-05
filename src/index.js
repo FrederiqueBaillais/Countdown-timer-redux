@@ -4,13 +4,11 @@ import { Provider } from "react-redux";
 import { createStore, combineReducers } from "redux";
 
 import timerReducer from "./store/reducers/timer";
-import lapsReducer from "./store/reducers/laps";
 import "./index.css";
 import App from "./App";
 
 const rootReducer = combineReducers({
 	tmr: timerReducer,
-	lpr: lapsReducer,
 });
 
 const store = createStore(rootReducer);

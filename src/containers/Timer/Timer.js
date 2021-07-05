@@ -6,13 +6,9 @@ import {
 	DECREMENT,
 	COUNTDOWN,
 	COUNTDOWNATZERO,
-	CREATELAP,
-	REMOVELAP,
-	RESET,
-	RESETLAPS,
+	RESET
 } from "../../store/actions";
 import Button from "../../components/Buttons/Button";
-import Label from "../../components/Labels/Label";
 
 class Timer extends Component {
 	constructor(props) {
@@ -24,7 +20,6 @@ class Timer extends Component {
 		this.startTimer = this.startTimer.bind(this);
 		this.stopTimer = this.stopTimer.bind(this);
 		this.countDown = this.countDown.bind(this);
-		this.lapTimer = this.lapTimer.bind(this);
 		this.resetTimer = this.resetTimer.bind(this);
 		this.incTimer = this.incTimer.bind(this);
 		this.decTimer = this.decTimer.bind(this);
@@ -84,16 +79,10 @@ class Timer extends Component {
 		}
 	}
 
-	lapTimer() {
-		// Lap only if timer is running and seconds aren't zero already
-		if (this.timer !== 0 && this.props.seconds !== 0)
-			this.props.onCreateLap(this.props.time);
-	}
-
 	resetTimer() {
 		// Getting back state to its original form
 		this.props.onReset();
-		this.props.onResetLaps();
+		//this.props.onResetLaps();
 
 		// Also, if timer is running, we've to stop it too
 		if (this.timer !== 0) {
@@ -117,19 +106,6 @@ class Timer extends Component {
 
 	render() {
 		let { h, m, s } = this.timeFormatter(this.props.time);
-		let laps = null;
-
-		if (this.props.laps.length !== 0)
-			laps = this.props.laps.map((lap, id) => {
-				let { h, m, s } = this.timeFormatter(lap);
-				return (
-					<Label
-						clicked={() => this.props.onRemoveLap(id)}
-						key={id}
-						lapTime={`${h}:${m}:${s}`}
-					/>
-				);
-			});
 
 		return (
 			<Fragment>
@@ -143,12 +119,10 @@ class Timer extends Component {
 						<Button clicked={this.incTimer}>+</Button>
 						<Button clicked={this.startTimer}>Start</Button>
 						<Button clicked={this.stopTimer}>Stop</Button>
-						<Button clicked={this.lapTimer}>Lap</Button>
 						<Button clicked={this.resetTimer}>Reset</Button>
 						<Button clicked={this.decTimer}>-</Button>
 					</div>
 				</div>
-				<div className="container py-6">{laps}</div>
 			</Fragment>
 		);
 	}
@@ -160,18 +134,14 @@ const mapDispatchToProps = (dispatch) => {
 		onDecrement: (fn) => dispatch({ type: DECREMENT, secToTime: fn }),
 		onCountDown: (fn) => dispatch({ type: COUNTDOWN, secToTime: fn }),
 		onCountDownAtZero: () => dispatch({ type: COUNTDOWNATZERO }),
-		onCreateLap: (time) => dispatch({ type: CREATELAP, time: time }),
-		onRemoveLap: (id) => dispatch({ type: REMOVELAP, id: id }),
-		onReset: () => dispatch({ type: RESET }),
-		onResetLaps: () => dispatch({ type: RESETLAPS }),
+		onReset: () => dispatch({ type: RESET })
 	};
 };
 
 const mapStateToProps = (state) => {
 	return {
 		time: state.tmr.time,
-		seconds: state.tmr.seconds,
-		laps: state.lpr.laps,
+		seconds: state.tmr.seconds
 	};
 };
 

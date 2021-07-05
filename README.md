@@ -35,7 +35,6 @@ Toutes les fonctionnalités dont nous avons besoin se produisent en cliquant sur
 <Button clicked={this.incTimer}>+</Button>
 <Button clicked={this.startTimer}>Start</Button>
 <Button clicked={this.stopTimer}>Stop</Button>
-<Button clicked={this.lapTimer}>Lap</Button>
 <Button clicked={this.resetTimer}>Reset</Button>
 <Button clicked={this.decTimer}>-</Button>
 ```
@@ -57,10 +56,10 @@ Tout d'abord, nous créerons un dossier ```store``` dans le répertoire racine, 
 Maintenant, si vous regardez l'état de notre application prête à l'emploi dans la branche ```react```, c'est :
 
 ```javascript
-this.state = { time: { h: 0, m: 0, s: 0 }, seconds: 0, laps: [] };
+this.state = { time: { h: 0, m: 0, s: 0 }, seconds: 0};
 ```
 
-Nous avons tous les temps intermédiaires stockés dans le tableau ```laps``` et tout ce qui concerne le temps est stocké à la fois dans les valeurs ```seconds``` et ```time```. Donc, pour clarifier les choses, nous pouvons ici en créer deux différents ```reducers``` dans notre dossier ```store```, à savoir ```laps.js``` et ```timer.js```. En outre, nous les conserverons dans un dossier nommé ```reducers``` situé dans notre dossier ```store```.
+Nous pouvons ici en créer un ```reducers``` dans notre dossier ```store```, à savoir ```timer.js```. En outre, nous le conserverons dans un dossier nommé ```reducers``` situé dans notre dossier ```store```.
 
 ## Création de notre Store
 
@@ -84,21 +83,19 @@ Nous ajouterons également nos réducteurs à partir du dossier des réducteurs 
 
 ```javascript
 import timerReducer from "./store/reducers/timer";
-import lapsReducer from "./store/reducers/laps";
 ```
 
 Maintenant, comme nous avons deux réducteurs différents, nous allons utiliser la fonction ```combineReducers``` pour les combiner et créer un fichier ```rootReducer```. Après quoi, nous pourrons créer un store en passant ceci dans la fonction ```createStore```.
 
 ```javascript
 const rootReducer = combineReducers({
-    tmr: timerReducer,
-    lpr: lapsReducer,
+    tmr: timerReducer
 });
 
 const store = createStore(rootReducer);
 ```
 
-**Remarque :** Le ```combineReducers``` va stocker à la fois les réducteurs ```timer``` et le ```lap``` dans deux propriétés d'objet différentes, à savoir ```tmr``` et ```lpr``` mais vous pouvez les nommer comme vous voulez.
+**Remarque :** Le ```combineReducers``` va stocker le réducteur ```timer``` dans la propriété d'objet ```tmr``` mais vous pouvez les nommer comme vous voulez.
 
 Enfin, et c'est le plus important, nous devons transmettre le store à tous les composants enfants pour qu'ils puissent y accéder localement. Nous pouvons le faire à travers le package ```Provider``` que nous avons inclus depuis le package ```react-redux```.
 
@@ -124,10 +121,7 @@ export const INCREMENT = "INCREMENT";
 export const DECREMENT = "DECREMENT";
 export const COUNTDOWN = "COUNTDOWN";
 export const COUNTDOWNATZERO = "COUNTDOWNATZERO";
-export const CREATELAP = "CREATELAP";
-export const REMOVELAP = "REMOVELAP";
 export const RESET = "RESET";
-export const RESETLAPS = "RESETLAPS";
 ```
 
 Vous pouvez visiter la branche ```redux2``` sur GitHub pour voir le code, si vous êtes bloqué quelque part.
@@ -144,10 +138,7 @@ import {
     DECREMENT,
     COUNTDOWN,
     COUNTDOWNATZERO,
-    CREATELAP,
-    REMOVELAP,
     RESET,
-    RESETLAPS,
 } from "../../store/actions";
 ```
 
@@ -161,7 +152,7 @@ Attends, mais c'est quoi ```mapStateToPropset``` et ```mapDispatchToProps``` ? C
 
 ## Création des réducteurs
 
-Enfin, il est temps de créer nos réducteurs qui passeront l'état mis à jour à l'objet store, ce qui conduira notre composant à re-rendre et à nous montrer la nouvelle heure. Comme vous avez déjà créé deux fichiers : ```timer.js``` et ```lap.js```, vous pouvez vous lancer directement.
+Enfin, il est temps de créer nos réducteurs qui passeront l'état mis à jour à l'objet store, ce qui conduira notre composant à re-rendre et à nous montrer la nouvelle heure. Comme vous avez déjà créé un fichier ```timer.js```, vous pouvez vous lancer directement.
 
 ## Création du réducteur ```timer.js```
 
@@ -181,7 +172,7 @@ Maintenant, créons un ```initialState``` qui contiendra l'état requis pour com
 
 ```const initialState = { time: { h: 0, m: 0, s: 0 }, seconds: 0 };```
 
-Maintenant nous allons créer la fonction ```reducer```. Nous vous suggèrons de revoir comment l'état est modifié (en utilisant this.setState) dans chacune des fonctions que nous avons passées au gestionnaire ```onClick``` du composant ```Button```. Cela vous donnera également une compréhension claire de notre fonction de réducteur.
+Maintenant nous allons créer la fonction ```reducer```. Nous vous suggèrons de revoir comment l'état est modifié (en utilisant ```this.setState()```) dans chacune des fonctions que nous avons passées au gestionnaire ```onClick``` du composant ```Button```. Cela vous donnera également une compréhension claire de notre fonction de réducteur.
 
 Cela étant dit et/ou fait, voici à quoi ressemblera le réducteur :
 
@@ -228,54 +219,6 @@ export default reducer;
 
 **Remarque :** Nous passons ```secToTime()``` de nombreuses fois en tant que fonction dans notre objet action, c'est parce que nous avons toujours besoin de cette fonction pour nous donner le format d'heure exact, en entrant simplement des secondes.
 
-## Création du ```laps.js```
-
-Tout d'abord, importons nos variables d'action au-dessus de la structure du fichier.
-
-```javascript
-import { CREATELAP, REMOVELAP, RESETLAPS } from "../actions";
-```
-
-Maintenant, créons un ```initialState``` qui contiendra l'état requis pour commencer notre application.
-
-```javascript
-const initialState = { laps: [] };
-```
-
-Maintenant nous allons créer la fonction ```reducer```. Nous vous suggèrons à nouveau de revoir comment l'état est modifié (en utilisant ```this.setState```) dans chacune des fonctions que nous avons passées au gestionnaire ```onClick``` du composant ```Button```. Cela vous donnera également une compréhension claire de notre fonction de réducteur.
-
-```javascript
-const reducer = (state = initialState, action) => {
-    switch (action.type) {
-        case CREATELAP:
-            const newLaps = [...state.laps];
-            return {
-                ...state,
-                laps: newLaps.concat(action.time),
-            };
-        case REMOVELAP:
-            return {
-                ...state,
-                laps: state.laps.filter((item, index) => index !== action.id),
-            };
-        case RESETLAPS: {
-            return {
-                ...state,
-                laps: [],
-            };
-        }
-        default:
-            return state;
-    }
-};
-
-export default reducer;
-```
-
-Comme mentionné, ce réducteur prendra simplement en charge le tableau ```laps``` qui se remplit lorsque l'utilisateur clique sur le bouton Lap et se réinitialise également en appuyant sur Reset et se supprime lorsqu'il est cliqué.
-
-**Remarque :** Le réducteur renvoie toujours un nouvel état de manière immuable à transmettre au store.
-
 Vous pouvez visiter la branche ```redux3``` sur GitHub pour voir le code, si vous êtes bloqué quelque part.
 
 ## Comment réduire et stocker à partir d'un composant ?
@@ -288,13 +231,12 @@ Il s'agit d'une fonction qui fonctionne en sous-jacent pour nous donner accès �
 const mapStateToProps = (state) => {
     return {
         time: state.tmr.time,
-        seconds: state.tmr.seconds,
-        laps: state.lpr.laps,
+        seconds: state.tmr.seconds
     };
 };
 ```
 
-Maintenant, comment devons-nous accéder aux propriétés ```tmr``` et ```lpr``` à l'intérieur du ```state```? C'est parce que nous avons combiné nos deux routeurs différents, ```lap.js``` et ```timer.js``` dans notre fichier ```index.js``` en utilisant ```combineReducers``` et nous avons donné ces noms dans notre fichier ```index```. Cela nous donnera la juste valeur de notre état.
+Maintenant, comment devons-nous accéder à la propriété ```tmr``` à l'intérieur du ```state```? C'est parce que nous avons combiné notre routeur, ```timer.js``` dans notre fichier ```index.js``` en utilisant ```combineReducers``` (dans l'éventualité d'un autre réducteur à combiner) et nous avons donné ce nom dans notre fichier ```index```. Cela nous donnera la juste valeur de notre état.
 
 ```mapDispatchToProps```
 
@@ -307,10 +249,7 @@ const mapDispatchToProps = (dispatch) => {
         onDecrement: (fn) => dispatch({ type: DECREMENT, secToTime: fn }),
         onCountDown: (fn) => dispatch({ type: COUNTDOWN, secToTime: fn }),
         onCountDownAtZero: () => dispatch({ type: COUNTDOWNATZERO }),
-        onCreateLap: (time) => dispatch({ type: CREATELAP, time: time }),
-        onRemoveLap: (id) => dispatch({ type: REMOVELAP, id: id }),
-        onReset: () => dispatch({ type: RESET }),
-        onResetLaps: () => dispatch({ type: RESETLAPS }),
+        onReset: () => dispatch({ type: RESET })
     };
 };
 ```
@@ -321,7 +260,7 @@ Ainsi, nous pouvons maintenant accéder à ces fonctions ```props``` dans notre 
 
 La fonction ```mapStateToProps``` nous donne accès au store global via des accessoires.
 
-Ci-dessus, nous pouvons voir que cette fonction renvoie trois propriétés, à savoir ```time```, ```seconds``` et ```laps```. Nous pouvons y accéder où nous voulons en faisant simplement ```this.props.time```, ```this.props.seconds``` et ```this.props.laps```.
+Ci-dessus, nous pouvons voir que cette fonction renvoie trois propriétés, à savoir ```time``` et ```seconds```. Nous pouvons y accéder où nous voulons en faisant simplement ```this.props.time``` et ```this.props.seconds```.
 
 ## Répartir des actions au lieu d'utiliser ```this.setState()```
 
@@ -389,16 +328,9 @@ decTimer() {
         }
     }
 
-    lapTimer() {
-        // Lap only if timer is running and seconds aren't zero already
-        if (this.timer !== 0 && this.props.seconds !== 0)
-            this.props.onCreateLap(this.props.time);
-    }
-
     resetTimer() {
         // Getting back state to its original form
         this.props.onReset();
-        this.props.onResetLaps();
 
         // Also, if timer is running, we've to stop it too
         if (this.timer !== 0) {
@@ -418,21 +350,6 @@ Nous devons donc remplacer le code ci-dessous de notre méthode ```render()``` p
 
 ```javascript
 let { h, m, s } = this.timeFormatter(this.state.time);
-
-let laps = null;
-
-if (this.state.laps.length !== 0) {
-    laps = this.state.laps.map((lap, id) => {
-        let { h, m, s } = this.timeFormatter(lap);
-        return (
-            <Label
-                key={id}
-                clicked={() => this.removeLap(id)}
-                lapTime={`${h}:${m}:${s}`}
-            />
-        );
-    });
-}
 ```
 
 Vous souvenez-vous comment sommes-nous censés accéder à notre store ?
@@ -440,7 +357,6 @@ Comme nous avons déjà mappé notre état sur les accessoires, nous pouvons fac
 
 ```javascript
 this.props.time
-this.props.laps
 this.props.seconds
 ```
 
@@ -448,21 +364,6 @@ Faisons juste cela.
 
 ```javascript
 let { h, m, s } = this.timeFormatter(this.props.time);
-
-let laps = null;
-
-if (this.props.laps.length !== 0) {
-    laps = this.props.laps.map((lap, id) => {
-        let { h, m, s } = this.timeFormatter(lap);
-        return (
-            <Label
-                key={id}
-                clicked={() => this.props.onRemoveLap(id)}
-                lapTime={`${h}:${m}:${s}`}
-            />
-        );
-    });
-}
 ```
 
 Maintenant, nous pouvons facilement afficher les données de notre store global dans notre méthode ```render()```, ce qui fait que notre application fonctionne parfaitement. Vous pouvez maintenant exécuter votre serveur à l'aide de ```npm run start``` ou ```yarn start``` pour voir comment fonctionne votre compte à rebours.
