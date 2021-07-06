@@ -109,13 +109,13 @@ class Timer extends Component {
 
 		return (
 			<Fragment>
-				<div className="container mt-4 flex flex-col">
-					<div className="mx-auto py-4">
-						<span className="text-6xl">
+				<div className="bloc-timer-buttons">
+					<div className="timer">
+						<span>
 							{h}:{m}:{s}
 						</span>
 					</div>
-					<div className="mx-auto py-6 mt-4 flex flex-row space-x-5">
+					<div className="buttons">
 						<Button clicked={this.incTimer}>+</Button>
 						<Button clicked={this.startTimer}>Start</Button>
 						<Button clicked={this.stopTimer}>Stop</Button>
